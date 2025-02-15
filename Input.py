@@ -6,37 +6,57 @@ class TypingSpeedTest:
     def __init__(self, root):
         self.root = root
         self.root.title("Typing Speed Test")
-        self.root.geometry("600x400")
+        self.root.geometry("800x500")
 
+        # Use a unique font
+        self.custom_font = ("Courier New", 16)
+
+        # Welcome screen
+        self.welcome_label = tk.Label(
+            root, text="Welcome to this typing test!", font=("Courier New", 24, "bold")
+        )
+        self.welcome_label.pack(pady=50)
+
+        self.start_button = tk.Button(
+            root, text="Start", command=self.start_test, font=self.custom_font
+        )
+        self.start_button.pack(pady=20)
+
+        # Sample text and typing area (hidden initially)
         self.sample_text = "The quick brown fox jumps over the lazy dog."
+        self.sample_display = tk.Text(
+            root, height=5, width=60, font=self.custom_font, wrap="word", state=tk.DISABLED
+        )
+        self.entry = tk.Text(root, height=10, width=60, font=self.custom_font)
+        self.reset_button = tk.Button(
+            root, text="Reset", command=self.reset_test, font=self.custom_font
+        )
+
         self.start_time = None
         self.end_time = None
 
-        self.label = tk.Label(root, text="Type the following text:", font=("Arial", 14))
-        self.label.pack(pady=10)
+    def start_test(self):
+        # Hide welcome screen and show typing test
+        self.welcome_label.pack_forget()
+        self.start_button.pack_forget()
 
-        # Use a Text widget to display the sample text with colored formatting
-        self.sample_display = tk.Text(root, height=5, width=50, font=("Arial", 12), wrap="word")
-        self.sample_display.insert(tk.END, self.sample_text)
-        self.sample_display.config(state=tk.DISABLED)  # Make it read-only
+        # Show sample text and typing area
         self.sample_display.pack(pady=10)
-
-        self.entry = tk.Text(root, height=10, width=50, font=("Arial", 12))
         self.entry.pack(pady=10)
-        self.entry.bind("<KeyRelease>", self.check_typing)
-
-        self.start_button = tk.Button(root, text="Start", command=self.start_test, font=("Arial", 12))
-        self.start_button.pack(pady=10)
-
-        self.reset_button = tk.Button(root, text="Reset", command=self.reset_test, font=("Arial", 12))
         self.reset_button.pack(pady=10)
 
-    def start_test(self):
-        self.start_time = time.time()
+        # Initialize the test
+        self.sample_display.config(state=tk.NORMAL)
+        self.sample_display.delete(1.0, tk.END)
+        self.sample_display.insert(tk.END, self.sample_text)
+        self.sample_display.config(state=tk.DISABLED)
+
         self.entry.config(state=tk.NORMAL)
         self.entry.delete(1.0, tk.END)
-        self.start_button.config(state=tk.DISABLED)
-        self.highlight_text()  # Reset highlighting when starting
+        self.entry.focus()
+
+        self.start_time = time.time()
+        self.entry.bind("<KeyRelease>", self.check_typing)
 
     def check_typing(self, event):
         typed_text = self.entry.get(1.0, tk.END).strip()
@@ -83,7 +103,6 @@ class TypingSpeedTest:
     def reset_test(self):
         self.entry.config(state=tk.NORMAL)
         self.entry.delete(1.0, tk.END)
-        self.start_button.config(state=tk.NORMAL)
         self.start_time = None
         self.end_time = None
         self.highlight_text()  # Reset highlighting
