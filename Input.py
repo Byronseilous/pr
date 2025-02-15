@@ -7,7 +7,8 @@ class TypingSpeedTest:
         self.root = root
         self.root.title("Typing Speed Test")
         self.root.geometry("800x500")
-
+        self.root.attributes("-fullscreen", True)  # Make the window fullscreen
+        self.root.bind("<Escape>", lambda event: self.root.attributes("-fullscreen", False)) #exit
         # Use a unique font
         self.custom_font = ("Courier New", 16)
 
