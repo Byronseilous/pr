@@ -62,10 +62,10 @@ class TypingSpeedTest:
         typed_text = self.entry.get(1.0, tk.END).strip()
         self.highlight_text()  # Update highlighting as the user types
 
-        if typed_text == self.sample_text:
+        # Check if the user has finished typing
+        if len(typed_text) >= len(self.sample_text):
             self.end_time = time.time()
-            self.calculate_speed()
-            self.entry.config(state=tk.DISABLED)
+            self.calculate_speed_and_accuracy(typed_text)
 
     def highlight_text(self):
         typed_text = self.entry.get(1.0, tk.END).strip()
@@ -94,11 +94,29 @@ class TypingSpeedTest:
         self.sample_display.tag_config("correct", foreground="blue")
         self.sample_display.tag_config("incorrect", foreground="red")
 
-    def calculate_speed(self):
+    def calculate_speed_and_accuracy(self, typed_text):
+        # Calculate time taken
         time_taken = self.end_time - self.start_time
+
+        # Calculate typing speed (WPM)
         words = len(self.sample_text.split())
         wpm = (words / time_taken) * 60
-        messagebox.showinfo("Typing Speed", f"Your typing speed is: {wpm:.2f} WPM")
+
+        # Calculate accuracy
+        correct_chars = 0
+        for i in range(min(len(typed_text), len(self.sample_text))):
+            if typed_text[i] == self.sample_text[i]:
+                correct_chars += 1
+
+        total_chars = len(self.sample_text)
+        accuracy = (correct_chars / total_chars) * 100
+
+        # Display results
+        messagebox.showinfo(
+            "Typing Results",
+            f"Your typing speed is: {wpm:.2f} WPM\n"
+            f"Your accuracy is: {accuracy:.2f}%"
+        )
 
     def reset_test(self):
         self.entry.config(state=tk.NORMAL)
