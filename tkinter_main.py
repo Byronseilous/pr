@@ -22,75 +22,202 @@ class TypingSpeedTest:
         # Set background color
         self.root.config(bg=self.COLORS["background"])
 
-        # Welcome screen
+        # Store user data (username: password)
+        self.users = {}
+
+        # Show the login screen initially
+        self.show_login_screen()
+
+    def show_login_screen(self):
+        """Display the login screen."""
+        self.clear_screen()
+
+        # Login screen widgets
+        self.login_label = tk.Label(
+            self.root, text="Login or Create Account", font=("Courier New", 24, "bold"),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.login_label.pack(pady=20)
+
+        # Username entry
+        self.username_label = tk.Label(
+            self.root, text="Username:", font=("Courier New", 16),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.username_label.pack(pady=5)
+        self.username_entry = tk.Entry(
+            self.root, font=("Courier New", 16), bg=self.COLORS["background"], fg=self.COLORS["text"]
+        )
+        self.username_entry.pack(pady=5)
+
+        # Password entry
+        self.password_label = tk.Label(
+            self.root, text="Password:", font=("Courier New", 16),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.password_label.pack(pady=5)
+        self.password_entry = tk.Entry(
+            self.root, font=("Courier New", 16), bg=self.COLORS["background"], fg=self.COLORS["text"], show="*"
+        )
+        self.password_entry.pack(pady=5)
+
+        # Login button
+        self.login_button = tk.Button(
+            self.root, text="Login", command=self.login, font=("Courier New", 16),
+            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
+        )
+        self.login_button.pack(pady=10)
+
+        # Create account button
+        self.create_account_button = tk.Button(
+            self.root, text="Create Account", command=self.show_create_account_screen, font=("Courier New", 16),
+            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
+        )
+        self.create_account_button.pack(pady=10)
+
+    def show_create_account_screen(self):
+        """Display the create account screen."""
+        self.clear_screen()
+
+        # Create account screen widgets
+        self.create_account_label = tk.Label(
+            self.root, text="Create Account", font=("Courier New", 24, "bold"),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.create_account_label.pack(pady=20)
+
+        # Username entry
+        self.new_username_label = tk.Label(
+            self.root, text="Username:", font=("Courier New", 16),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.new_username_label.pack(pady=5)
+        self.new_username_entry = tk.Entry(
+            self.root, font=("Courier New", 16), bg=self.COLORS["background"], fg=self.COLORS["text"]
+        )
+        self.new_username_entry.pack(pady=5)
+
+        # Password entry
+        self.new_password_label = tk.Label(
+            self.root, text="Password:", font=("Courier New", 16),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.new_password_label.pack(pady=5)
+        self.new_password_entry = tk.Entry(
+            self.root, font=("Courier New", 16), bg=self.COLORS["background"], fg=self.COLORS["text"], show="*"
+        )
+        self.new_password_entry.pack(pady=5)
+
+        # Confirm password entry
+        self.confirm_password_label = tk.Label(
+            self.root, text="Confirm Password:", font=("Courier New", 16),
+            fg=self.COLORS["text"], bg=self.COLORS["background"]
+        )
+        self.confirm_password_label.pack(pady=5)
+        self.confirm_password_entry = tk.Entry(
+            self.root, font=("Courier New", 16), bg=self.COLORS["background"], fg=self.COLORS["text"], show="*"
+        )
+        self.confirm_password_entry.pack(pady=5)
+
+        # Create account button
+        self.create_account_final_button = tk.Button(
+            self.root, text="Create Account", command=self.create_account, font=("Courier New", 16),
+            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
+        )
+        self.create_account_final_button.pack(pady=10)
+
+        # Back to login button
+        self.back_to_login_button = tk.Button(
+            self.root, text="Back to Login", command=self.show_login_screen, font=("Courier New", 16),
+            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
+        )
+        self.back_to_login_button.pack(pady=10)
+
+    def create_account(self):
+        """Create a new account."""
+        username = self.new_username_entry.get().strip()
+        password = self.new_password_entry.get().strip()
+        confirm_password = self.confirm_password_entry.get().strip()
+
+        if not username or not password or not confirm_password:
+            messagebox.showerror("Error", "All fields are required!")
+            return
+
+        if password != confirm_password:
+            messagebox.showerror("Error", "Passwords do not match!")
+            return
+
+        if username in self.users:
+            messagebox.showerror("Error", "Username already exists!")
+            return
+
+        # Store the new user
+        self.users[username] = password
+        messagebox.showinfo("Success", "Account created successfully!")
+        self.show_login_screen()
+
+    def login(self):
+        """Log in the user."""
+        username = self.username_entry.get().strip()
+        password = self.password_entry.get().strip()
+
+        if not username or not password:
+            messagebox.showerror("Error", "Username and password are required!")
+            return
+
+        if username not in self.users or self.users[username] != password:
+            messagebox.showerror("Error", "Invalid username or password!")
+            return
+
+        # Successful login
+        self.current_user = username
+        self.show_welcome_screen()
+
+    def show_welcome_screen(self):
+        """Display the welcome screen with the username."""
+        self.clear_screen()
+
         self.welcome_label = tk.Label(
-            root, text="Welcome to this typing test!", font=("Courier New", 24, "bold"),
+            self.root, text=f"Welcome, {self.current_user}!", font=("Courier New", 24, "bold"),
             fg=self.COLORS["text"], bg=self.COLORS["background"]
         )
         self.welcome_label.pack(pady=50)
 
         # Start button
         self.start_button = tk.Button(
-            root, text="Start", command=self.start_test, font=("Courier New", 16),
+            self.root, text="Start Typing Test", command=self.start_test, font=("Courier New", 16),
             bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
         )
         self.start_button.pack(pady=20)
 
-        # Sample text and typing area (hidden initially)
-        self.sample_text = "The quick brown fox jumps over the lazy dog."
-        self.sample_display = tk.Text(
-            root, height=5, width=60, font=("Courier New", 16), wrap="word", state=tk.DISABLED,
-            bg=self.COLORS["background"], fg=self.COLORS["text"]
-        )
-        self.entry = tk.Text(
-            root, height=10, width=60, font=("Courier New", 16),
-            bg=self.COLORS["background"], fg=self.COLORS["text"], insertbackground=self.COLORS["text"]
-        )
-        self.reset_button = tk.Button(
-            root, text="Reset", command=self.reset_test, font=("Courier New", 16),
-            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
-        )
-
-        # Add 30 buttons for future functionality
-        self.button_frame = tk.Frame(root, bg=self.COLORS["background"])
-       # self.create_buttons()
-
-        self.start_time = None
-        self.end_time = None
-
-    # def create_buttons(self):
-    #     """Create 30 buttons in a 5x6 grid."""
-    #     for i in range(30):
-    #         row = i // 6  # 6 buttons per row
-    #         col = i % 6    # 6 columns
-    #         button = tk.Button(
-    #             self.button_frame,
-    #             text=f"Button {i+1}",
-    #             command=lambda i=i: self.button_click(i + 1),
-    #             bg=self.COLORS["button"], fg=self.COLORS["text"], font=("Arial", 12), relief="flat"
-    #         )
-    #         button.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
-    #
-    #     # Configure grid weights to make buttons expand evenly
-    #     for r in range(5):
-    #         self.button_frame.grid_rowconfigure(r, weight=1)
-    #     for c in range(6):
-    #         self.button_frame.grid_columnconfigure(c, weight=1)
-    #
-    # def button_click(self, button_number):
-    #     """Placeholder function for button clicks."""
-    #     print(f"Button {button_number} clicked!")  # Replace with actual functionality
+    def clear_screen(self):
+        """Clear all widgets from the screen."""
+        for widget in self.root.winfo_children():
+            widget.destroy()
 
     def start_test(self):
         """Start the typing test."""
-        self.welcome_label.pack_forget()
-        self.start_button.pack_forget()
+        self.clear_screen()
+
+        # Sample text and typing area
+        self.sample_text = "The quick brown fox jumps over the lazy dog."
+        self.sample_display = tk.Text(
+            self.root, height=5, width=60, font=("Courier New", 16), wrap="word", state=tk.DISABLED,
+            bg=self.COLORS["background"], fg=self.COLORS["text"]
+        )
+        self.entry = tk.Text(
+            self.root, height=10, width=60, font=("Courier New", 16),
+            bg=self.COLORS["background"], fg=self.COLORS["text"], insertbackground=self.COLORS["text"]
+        )
+        self.reset_button = tk.Button(
+            self.root, text="Reset", command=self.reset_test, font=("Courier New", 16),
+            bg=self.COLORS["button"], fg=self.COLORS["text"], relief="flat"
+        )
 
         # Show sample text and typing area
         self.sample_display.pack(pady=10)
         self.entry.pack(pady=10)
         self.reset_button.pack(pady=10)
-        self.button_frame.pack(fill="both", expand=True)
 
         # Initialize the test
         self.sample_display.config(state=tk.NORMAL)
