@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox
 import time
+import json
+import os
 
 class TypingSpeedTest:
     def __init__(self, root):
@@ -13,20 +15,35 @@ class TypingSpeedTest:
         self.COLORS = {
             "background": "#2E3440",  # Dark gray
             "text": "#D8DEE9",        # Light gray
-            "button": "#5E81AC",       # Blue
-            "highlight": "#88C0D0",    # Light blue
-            "error": "#BF616A",        # Red
-            "success": "#A3BE8C",      # Green
+            "button": "#5E81AC",     # Blue
+            "highlight": "#88C0D0",   # Light blue
+            "error": "#BF616A",       # Red
+            "success": "#A3BE8C",     # Green
         }
 
         # Set background color
         self.root.config(bg=self.COLORS["background"])
 
-        # Store user data (username: password)
-        self.users = {}
+        # File to store user data
+        self.USER_DATA_FILE = "user_data.json"
+
+        # Load existing user data or initialize an empty dictionary
+        self.users = self.load_user_data()
 
         # Show the login screen initially
         self.show_login_screen()
+
+    def load_user_data(self):
+        """Load user data from a JSON file."""
+        if os.path.exists(self.USER_DATA_FILE):
+            with open(self.USER_DATA_FILE, "r") as file:
+                return json.load(file)
+        return {}
+
+    def save_user_data(self):
+        """Save user data to a JSON file."""
+        with open(self.USER_DATA_FILE, "w") as file:
+            json.dump(self.users, file)
 
     def show_login_screen(self):
         """Display the login screen."""
@@ -153,6 +170,7 @@ class TypingSpeedTest:
 
         # Store the new user
         self.users[username] = password
+        self.save_user_data()  # Save user data to file
         messagebox.showinfo("Success", "Account created successfully!")
         self.show_login_screen()
 
